@@ -3,7 +3,7 @@
 
 #include "Sensor.h"
 
-class CpuSensor: public Sensor {
+class CpuSensor : public Sensor {
 private:
     int cores;
     static int globalCycle;

@@ -1,5 +1,6 @@
 #include "SystemMonitor.h"
 #include "CpuSensor.h"
+#include "RamSensor.h"
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -11,8 +12,9 @@ int main() {
 
   SystemMonitor systemMonitor(serverName);
   systemMonitor.addSensor(std::make_unique<CpuSensor>(cpuCores, 85.0));
+  systemMonitor.addSensor(std::make_unique<RamSensor>(90.0));
 
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 12; i++) {
     systemMonitor.fetchAllData();
     systemMonitor.displayStatus();
     std::this_thread::sleep_for(std::chrono::seconds(2));
