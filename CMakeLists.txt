@@ -18,6 +18,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(SystemMonitor
     src/main.cpp
+    src/Config.cpp
     src/core/SystemMonitor.cpp
     src/core/Logger.cpp
     src/sensors/Sensor.cpp
