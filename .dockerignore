@@ -1,3 +1,5 @@
-build
-.git
-coverage
+build/
+.git/
+coverage/
+*.log
+!run.sh

@@ -1,7 +1,7 @@
 # start
 ```
 docker build -t system-monitor .
-docker run -it --rm -v $(pwd):/app system-monitor
+docker run -it --rm -v $(pwd)/logs:/app/logs system-monitor
 ```
 
 # inside container
@@ -22,10 +22,4 @@ make clean && cmake -DCMAKE_BUILD_TYPE=Debug ..
 make -j$(nproc)
 ctest
 make coverage
-```
-
-# running locally
-```
-docker build -t system-monitor .
-docker run -it --rm -v $(pwd)/logs:/app/logs system-monitor
 ```

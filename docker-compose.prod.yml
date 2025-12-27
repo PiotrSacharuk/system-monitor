@@ -4,6 +4,6 @@ services:
     volumes:
       - ./logs:/app/logs
     environment:
-      - LOG_LEVEL=INFO
+      - PRODUCTION_MODE=true
     command: ./run.sh
     restart: unless-stopped

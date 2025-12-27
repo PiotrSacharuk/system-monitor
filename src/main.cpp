@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "SystemMonitor.h"
 #include "CpuSensor.h"
 #include "DiskSensor.h"
@@ -18,10 +19,21 @@ int main() {
   systemMonitor.addSensor(std::make_unique<RamSensor>(90.0));
   systemMonitor.addSensor(std::make_unique<DiskSensor>(90.0));
 
-  for (int i = 0; i < 12; i++) {
-    systemMonitor.fetchAllData();
-    systemMonitor.displayStatus();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+  int cycles = Config::monitoringCycles();
+  if (cycles == -1) {
+    Logger::log("PRODUCTION MODE: Infinite monitoring");
+    while (true) {
+      systemMonitor.fetchAllData();
+      systemMonitor.displayStatus();
+      std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
+  } else {
+    Logger::log("TEST MODE: " + std::to_string(cycles) + " cycles.");
+    for (int i = 0; i < cycles; i++) {
+      systemMonitor.fetchAllData();
+      systemMonitor.displayStatus();
+      std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
   }
 
   std::cout << "Monitoring finished." << std::endl;
