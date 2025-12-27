@@ -8,3 +8,10 @@ cd build && make clean && cmake .. && make -j$(nproc) && ./SystemMonitor
 
 # testing
 ctest -V
+
+# coverage
+cd build
+make clean && cmake -DCMAKE_BUILD_TYPE=Debug ..
+make -j$(nproc)
+ctest
+make coverage
