@@ -7,10 +7,15 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git \
     lcov \
+    gcovr \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
 COPY . .
 
-CMD ["/bin/bash"]
+RUN rm -rf build && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release .. && \
+    make -j$(nproc)
+
+CMD ["./build/SystemMonitor"]
