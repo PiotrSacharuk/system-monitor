@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY . .
 
-RUN mkdir -p build && cd build && \
+RUN rm -rf build && \
+    mkdir build && cd build && \
     cmake -DCMAKE_BUILD_TYPE=Release .. && \
-    make -j$(nproc) && \
-    cd ..
+    make -j$(nproc)
 
 CMD ["./build/SystemMonitor"]
