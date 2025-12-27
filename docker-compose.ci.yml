@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  ci:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bash -c "cd build && ctest -V && lcov --directory . --capture --output-file coverage.info"
