@@ -11,6 +11,7 @@ add_executable(SystemMonitor
     src/Sensor.cpp
     src/CpuSensor.cpp
     src/RamSensor.cpp
+    src/DiskSensor.cpp
 )
 
 enable_testing()
