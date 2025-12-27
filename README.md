@@ -7,4 +7,4 @@ mkdir build
 cd build && make clean && cmake .. && make -j$(nproc) && ./SystemMonitor
 
 # testing
-ctest
+ctest -V
