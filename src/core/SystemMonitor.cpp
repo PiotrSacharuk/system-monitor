@@ -1,4 +1,5 @@
 #include "SystemMonitor.h"
+#include "Logger.h"
 #include <iostream>
 #include <string>
 
@@ -24,6 +25,8 @@ void SystemMonitor::displayStatus() {
         sensor->displayStatus();
         if (!sensor->isHealthy()) {
             allHealthy = false;
+            std::string msg = sensor->getName() + " usage critical: " + std::to_string(sensor->getValue());
+            Logger::logError(msg);
         }
     }
 

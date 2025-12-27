@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 enable_testing()
-include_directories(src)
+include_directories(src src/core src/sensors)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -18,20 +18,22 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(SystemMonitor
     src/main.cpp
-    src/SystemMonitor.cpp
-    src/Sensor.cpp
-    src/CpuSensor.cpp
-    src/RamSensor.cpp
-    src/DiskSensor.cpp
+    src/core/SystemMonitor.cpp
+    src/core/Logger.cpp
+    src/sensors/Sensor.cpp
+    src/sensors/CpuSensor.cpp
+    src/sensors/RamSensor.cpp
+    src/sensors/DiskSensor.cpp
 )
 
 add_executable(unit_tests
     tests/test_main.cpp
-    src/SystemMonitor.cpp
-    src/Sensor.cpp
-    src/CpuSensor.cpp
-    src/RamSensor.cpp
-    src/DiskSensor.cpp
+    src/core/SystemMonitor.cpp
+    src/core/Logger.cpp
+    src/sensors/Sensor.cpp
+    src/sensors/CpuSensor.cpp
+    src/sensors/RamSensor.cpp
+    src/sensors/DiskSensor.cpp
 )
 target_link_libraries(unit_tests gtest gtest_main)
 add_test(NAME AllTests COMMAND unit_tests)

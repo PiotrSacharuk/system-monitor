@@ -2,12 +2,14 @@
 #include "CpuSensor.h"
 #include "DiskSensor.h"
 #include "RamSensor.h"
+#include "Logger.h"
 #include <chrono>
 #include <iostream>
 #include <string>
 #include <thread>
 
 int main() {
+  Logger::log("System Monitor started.");
   std::string serverName = "Prod-Sever-01";
   int cpuCores = 8;
 
