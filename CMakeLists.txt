@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(SystemMonitor
     src/main.cpp
     src/SystemMonitor.cpp
+    src/Sensor.cpp
+    src/CpuSensor.cpp
 )
 
 enable_testing()

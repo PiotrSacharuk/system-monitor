@@ -2,33 +2,39 @@
 #include <iostream>
 #include <string>
 
-SystemMonitor::SystemMonitor(const std::string& name, int cores)
-    : serverName(name), cpuCores(cores), cycleCounter(0) {
-    cpuLoad = 0.0;
-    ramUsage = 0.0;
-    diskUsage = 0.0;
-    isHealthy = true;
+SystemMonitor::SystemMonitor(const std::string& name) : serverName(name) {}
+
+void SystemMonitor::addSensor(std::unique_ptr<Sensor> sensor) {
+    sensors.push_back(std::move(sensor));
 }
 
-void SystemMonitor::fetchData() {
-    cycleCounter++;
-    cpuLoad = 15.5 + (cycleCounter % 5) * 10;
-    ramUsage = 42.3 + cycleCounter;
-    diskUsage = 78.9;
-    isHealthy = (cpuLoad < 90.0);
+void SystemMonitor::fetchAllData() {
+    std::cout << "Collect data from all sensors..." << std::endl;
+    for (auto& sensor : sensors) {
+        sensor->fetchData();
+    }
 }
 
 void SystemMonitor::displayStatus() {
-  std::cout << "=== SYSTEM MONITOR ===" << std::endl;
-  std::cout << "Server Name: " << serverName << std::endl;
-  std::cout << "CPU Load: " << cpuLoad << "% (" << cpuCores << " cores)"
-            << std::endl;
-  std::cout << "RAM Usage: " << ramUsage << "%" << std::endl;
-  std::cout << "Disk Usage: " << diskUsage << "%" << std::endl;
-  std::cout << "Status: " << (isHealthy ? "OK" : "PROBLEM") << std::endl; 
-  std::cout << "---" << std::endl;
+    std::cout << "=== SYSTEM MONITOR ===" << std::endl;
+    std::cout << "Server: " << serverName << std::endl;
+
+    bool allHealthy = true;
+    for (const auto& sensor : sensors) {
+        sensor->displayStatus();
+        if (!sensor->isHealthy()) {
+            allHealthy = false;
+        }
+    }
+
+    std::cout << "Overall status: " << (allHealthy ? "OK" : "ALARM") << std::endl;
+    std::cout << "---" << std::endl;
 }
 
-bool SystemMonitor::isSystemHealthy() const {
-    return isHealthy;
+bool SystemMonitor::isHealthy() const {
+    for (const auto& sensor : sensors) {
+        if (!sensor->isHealthy())
+            return false;
+    }
+    return true;
 }
