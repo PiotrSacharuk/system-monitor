@@ -23,3 +23,9 @@ make -j$(nproc)
 ctest
 make coverage
 ```
+
+# running locally
+```
+docker build -t system-monitor .
+docker run -it --rm -v $(pwd)/logs:/app/logs system-monitor
+```

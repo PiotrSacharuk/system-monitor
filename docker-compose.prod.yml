@@ -1,0 +1,9 @@
+services:
+  system-monitor:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - LOG_LEVEL=INFO
+    command: ./run.sh
+    restart: unless-stopped
