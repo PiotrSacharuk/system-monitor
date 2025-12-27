@@ -17,4 +17,5 @@ RUN mkdir build && cd build && \
     cmake -DCMAKE_BUILD_TYPE=Release .. && \
     make -j$(nproc)
 
+VOLUME ["/app/logs"]
 CMD ["./build/SystemMonitor"]
