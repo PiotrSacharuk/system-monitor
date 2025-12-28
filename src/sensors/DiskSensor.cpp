@@ -1,12 +1,22 @@
 #include "DiskSensor.h"
 #include <iostream>
-
-int DiskSensor::diskCycle = 0;
+#include <fstream>
 
 DiskSensor::DiskSensor(double alertThreshold) : Sensor("DISK", alertThreshold) {}
 
 void DiskSensor::fetchData() {
-    diskCycle++;
-    currentValue = 50.0 + (diskCycle % 6) * 9.0;
-    std::cout << "Disk data collected from /proc/diskstats..." << std::endl;
+    std::ifstream diskStats("/proc/diskstats");
+    std::string line;
+    unsigned long long reads = 0, writes = 0;
+
+    while (std::getline(diskStats, line)) {
+        if (line.find("sda ") != std::string::npos) {
+            unsigned major, minor, blocks;
+            sscanf(line.c_str(), "%u %u %*s %llu %*u %*u %*u %*u %llu",
+                &major, &minor, &reads, &writes);
+            break;
+        }
+    }
+    currentValue = std::min(95.0, 40.0 + (reads % 100) / 2.0);
+    std::cout << "Disk data collected from /proc/diskstats (" << (int)currentValue << "%)" << std::endl;
 }

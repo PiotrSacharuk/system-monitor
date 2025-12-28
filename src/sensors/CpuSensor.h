@@ -7,6 +7,7 @@ class CpuSensor : public Sensor {
 private:
     int cores;
     static int globalCycle;
+    unsigned long long prevUser, prevNice, prevSystem, prevIdle, prevTotal;
 
 public:
     CpuSensor(int cpuCores, double alertThreshold);

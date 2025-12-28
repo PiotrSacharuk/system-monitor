@@ -4,9 +4,6 @@
 #include "Sensor.h"
 
 class RamSensor : public Sensor {
-private:
-    static int ramCycle;
-
 public:
     RamSensor(double alertThreshold);
     void fetchData() override;
