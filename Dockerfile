@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     git \
     lcov \
     gcovr \
+    libyaml-cpp-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

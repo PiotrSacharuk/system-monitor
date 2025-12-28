@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.10)
-
 project(SystemMonitor VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -10,6 +9,13 @@ include_directories(src src/core src/sensors)
 
 include(FetchContent)
 FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG        yaml-cpp-0.7.0
+)
+FetchContent_MakeAvailable(yaml-cpp)
+
+FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
     GIT_TAG        v1.17.0
@@ -18,7 +24,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(SystemMonitor
     src/main.cpp
-    src/Config.cpp
+    src/core/Config.cpp
     src/core/SystemMonitor.cpp
     src/core/Logger.cpp
     src/sensors/Sensor.cpp
@@ -26,9 +32,11 @@ add_executable(SystemMonitor
     src/sensors/RamSensor.cpp
     src/sensors/DiskSensor.cpp
 )
+target_link_libraries(SystemMonitor yaml-cpp)
 
 add_executable(unit_tests
     tests/test_main.cpp
+    src/core/Config.cpp
     src/core/SystemMonitor.cpp
     src/core/Logger.cpp
     src/sensors/Sensor.cpp
@@ -36,7 +44,7 @@ add_executable(unit_tests
     src/sensors/RamSensor.cpp
     src/sensors/DiskSensor.cpp
 )
-target_link_libraries(unit_tests gtest gtest_main)
+target_link_libraries(unit_tests yaml-cpp gtest gtest_main)
 add_test(NAME AllTests COMMAND unit_tests)
 
 # only for debug

@@ -1,0 +1,20 @@
+# config.example.yaml - copy to config.yaml
+server:
+  name: "Prod-Server-01"
+
+monitoring:
+  interval_seconds: 5
+  test_cycles: 12    # -1 = infinite (production)
+
+sensors:
+  cpu:
+    threshold: 85.0
+    cores: 8
+  ram:
+    threshold: 90.0
+  disk:
+    threshold: 90.0
+
+logging:
+  enabled: true
+  level: "INFO"
