@@ -10,16 +10,18 @@
 #include <thread>
 
 int main() {
-  Logger::log("System Monitor started.");
-  std::string serverName = "Prod-Sever-01";
-  int cpuCores = 8;
+  auto& config = Config::getInstance();
+  Logger::log("System Monitor started: " + config.server.name);
 
-  SystemMonitor systemMonitor(serverName);
-  systemMonitor.addSensor(std::make_unique<CpuSensor>(cpuCores, 85.0));
-  systemMonitor.addSensor(std::make_unique<RamSensor>(90.0));
-  systemMonitor.addSensor(std::make_unique<DiskSensor>(90.0));
+  SystemMonitor systemMonitor(config.server.name);
+  systemMonitor.addSensor(std::make_unique<CpuSensor>(config.cpu.cores, config.cpu.threshold));
+  systemMonitor.addSensor(std::make_unique<RamSensor>(config.ram.threshold));
+  systemMonitor.addSensor(std::make_unique<DiskSensor>(config.disk.threshold));
 
-  int cycles = Config::monitoringCycles();
+  Logger::log("Monitoring " + std::to_string(config.monitoring.test_cycles) +
+              " cycles every " + std::to_string(config.monitoring.interval_seconds) + "s");
+
+  int cycles = config.monitoring.test_cycles;
   if (cycles == -1) {
     Logger::log("PRODUCTION MODE: Infinite monitoring");
     while (true) {
