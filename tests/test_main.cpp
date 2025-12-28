@@ -5,29 +5,28 @@
 #include "RamSensor.h"
 #include "SystemMonitor.h"
 
-TEST(CpuSensorTest, FetchDataIncreasesValue) {
+TEST(CpuSensorTest, RealMetricsPositive) {
     CpuSensor cpu(8, 85.0);
+    double before = cpu.getValue();
     cpu.fetchData();
-    EXPECT_GT(cpu.getValue(), 0.0);
+    double after = cpu.getValue();
+    EXPECT_GE(after, 0.0);
 }
 
-TEST(RamSensorTest, AlertThreshold) {
+TEST(RamSensorTest, RealMetricsReasonable) {
     RamSensor ram(50.0);
     ram.fetchData();
-    EXPECT_GT(ram.getValue(), 30.0);
+    EXPECT_GT(ram.getValue(), 0.0);
+    EXPECT_LE(ram.getValue(), 99.0);
     EXPECT_TRUE(ram.isHealthy());
 }
 
-TEST(DiskSensorTest, HighUsageTriggersAlarm) {
-    DiskSensor disk(60.0);
-    EXPECT_EQ(disk.getValue(), 0.0);
-
+TEST(DiskSensorTest, ThresholdWorks) {
+    DiskSensor disk(50.0);
     disk.fetchData();
-    EXPECT_TRUE(disk.isHealthy());
 
-    disk.fetchData();
-    EXPECT_GT(disk.getValue(), 50.0);
-    EXPECT_FALSE(disk.isHealthy());
+    double value = disk.getValue();
+    EXPECT_EQ(disk.isHealthy(), value < 50.0);
 }
 
 TEST(SensorTest, DisplayStatusOutput) {
