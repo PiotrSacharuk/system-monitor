@@ -3,10 +3,11 @@
 
 #include <string>
 
-class Logger {
+class Logger
+{
 public:
-    static void log(const std::string& message, const std::string& logLevel = "INFO");    
-    static void logError(const std::string& message);    
+    static void log(const std::string &message, const std::string &logLevel = "INFO");
+    static void logError(const std::string &message);
 };
 
 #endif

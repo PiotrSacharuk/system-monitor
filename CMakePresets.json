@@ -1,0 +1,46 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 25,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "displayName": "Base Config",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
+            "name": "release",
+            "inherits": "base",
+            "displayName": "Release Optimized",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O3 -march=native -DNDEBUG"
+            }
+        },
+        {
+            "name": "asan",
+            "inherits": "base",
+            "displayName": "AddressSanitizer",
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -g -O1"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "configurePreset": "release"
+        },
+        {
+            "name": "asan-build",
+            "configurePreset": "asan"
+        }
+    ]
+}

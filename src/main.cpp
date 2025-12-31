@@ -1,9 +1,9 @@
-#include "Config.h"
-#include "SystemMonitor.h"
-#include "CpuSensor.h"
-#include "DiskSensor.h"
-#include "RamSensor.h"
-#include "Logger.h"
+#include "core/Config.h"
+#include "core/Logger.h"
+#include "core/SystemMonitor.h"
+#include "sensors/CpuSensor.h"
+#include "sensors/DiskSensor.h"
+#include "sensors/RamSensor.h"
 #include <chrono>
 #include <iostream>
 #include <string>
