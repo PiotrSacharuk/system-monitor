@@ -9,8 +9,9 @@
 #include <string>
 #include <thread>
 
-int main() {
-  auto& config = Config::getInstance();
+int main()
+{
+  auto &config = Config::getInstance();
   Logger::log("System Monitor started: " + config.server.name);
 
   SystemMonitor systemMonitor(config.server.name);
@@ -22,16 +23,26 @@ int main() {
               " cycles every " + std::to_string(config.monitoring.interval_seconds) + "s");
 
   int cycles = config.monitoring.test_cycles;
-  if (cycles == -1) {
+  if (cycles == -1)
+  {
     Logger::log("PRODUCTION MODE: Infinite monitoring");
-    while (true) {
+    while (true)
+    {
       systemMonitor.fetchAllData();
       systemMonitor.displayStatus();
+
+      std::cout << "\n STATISTICS: " << std::endl;
+      std::cout << "CPU avg: " << systemMonitor.getSensorAverage("CPU") << std::endl;
+      std::cout << "CPU max: " << systemMonitor.getSensorMax("CPU") << std::endl;
+      std::cout << "CPU trend: " << systemMonitor.getSensorTrend("CPU") << std::endl;
       std::this_thread::sleep_for(std::chrono::seconds(5));
     }
-  } else {
+  }
+  else
+  {
     Logger::log("TEST MODE: " + std::to_string(cycles) + " cycles.");
-    for (int i = 0; i < cycles; i++) {
+    for (int i = 0; i < cycles; i++)
+    {
       systemMonitor.fetchAllData();
       systemMonitor.displayStatus();
       std::this_thread::sleep_for(std::chrono::seconds(2));
