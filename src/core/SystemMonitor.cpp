@@ -7,49 +7,41 @@
 
 SystemMonitor::SystemMonitor(const std::string &name) : serverName(name) {}
 
-void SystemMonitor::addSensor(std::unique_ptr<Sensor> sensor)
-{
+void SystemMonitor::addSensor(std::unique_ptr<Sensor> sensor) {
     std::string name = sensor->getName();
     sensors[name] = std::move(sensor);
     history[name] = {};
 }
 
-void SystemMonitor::fetchAllData()
-{
+void SystemMonitor::fetchAllData() {
     std::cout << "Collect data from all sensors..." << std::endl;
-    for (auto &[name, sensor] : sensors)
-    {
+    for (auto &[name, sensor] : sensors) {
         sensor->fetchData();
 
         auto &buf = history[name];
 
         buf.push_back(sensor->getValue());
-        if (buf.size() > HISTORY_SIZE)
-        {
+        if (buf.size() > HISTORY_SIZE) {
             buf.pop_front();
         }
     }
 }
 
-double SystemMonitor::getSensorAverage(const std::string &name) const
-{
+double SystemMonitor::getSensorAverage(const std::string &name) const {
     auto it = history.find(name);
-    if (it == history.end() || it->second.empty())
-    {
+    if (it == history.end() || it->second.empty()) {
         return 0.0;
     }
 
     double sum = 0.0;
-    for (double value : it->second)
-    {
+    for (double value : it->second) {
         sum += value;
     }
 
     return sum / it->second.size();
 }
 
-double SystemMonitor::getSensorMax(const std::string &name) const
-{
+double SystemMonitor::getSensorMax(const std::string &name) const {
     auto it = history.find(name);
     if (it == history.end() || it->second.empty())
         return 0.0;
@@ -58,8 +50,7 @@ double SystemMonitor::getSensorMax(const std::string &name) const
     return *std::max_element(buf.begin(), buf.end());
 }
 
-double SystemMonitor::getSensorTrend(const std::string &name) const
-{
+double SystemMonitor::getSensorTrend(const std::string &name) const {
     auto it = history.find(name);
     if (it == history.end())
         return 0.0;
@@ -87,31 +78,28 @@ double SystemMonitor::getSensorTrend(const std::string &name) const
     return (recent_avg - old_avg) / old_avg * 100.0;
 }
 
-void SystemMonitor::displayStatus()
-{
+void SystemMonitor::displayStatus() {
     std::cout << "=== SYSTEM MONITOR ===" << std::endl;
     std::cout << "Server: " << serverName << std::endl;
 
     bool allHealthy = true;
-    for (const auto &sensor : sensors)
-    {
+    for (const auto &sensor : sensors) {
         sensor.second->displayStatus();
-        if (!sensor.second->isHealthy())
-        {
+        if (!sensor.second->isHealthy()) {
             allHealthy = false;
-            std::string msg = sensor.second->getName() + " usage critical: " + std::to_string(sensor.second->getValue());
+            std::string msg = sensor.second->getName() + " usage critical: " +
+                              std::to_string(sensor.second->getValue());
             Logger::logError(msg);
         }
     }
 
-    std::cout << "Overall status: " << (allHealthy ? "OK" : "ALARM") << std::endl;
+    std::cout << "Overall status: " << (allHealthy ? "OK" : "ALARM")
+              << std::endl;
     std::cout << "---" << std::endl;
 }
 
-bool SystemMonitor::isHealthy() const
-{
-    for (const auto &sensor : sensors)
-    {
+bool SystemMonitor::isHealthy() const {
+    for (const auto &sensor : sensors) {
         if (!sensor.second->isHealthy())
             return false;
     }

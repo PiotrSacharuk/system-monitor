@@ -1,8 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <string>
 #include <memory>
+#include <string>
 
 struct SensorConfig {
     std::string name;
@@ -20,15 +20,16 @@ struct MonitoringConfig {
 };
 
 class Config {
-public:
-    static Config& getInstance();
+  public:
+    static Config &getInstance();
 
     ServerConfig server;
     MonitoringConfig monitoring;
     SensorConfig cpu, ram, disk;
-private:
+
+  private:
     Config();
-    void loadFromFile(const std::string& filename);
+    void loadFromFile(const std::string &filename);
 };
 
 #endif

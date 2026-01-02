@@ -3,15 +3,14 @@
 
 #include <string>
 
-class Sensor
-{
-protected:
+class Sensor {
+  protected:
     std::string name;
     double currentValue;
     double threshold;
     Sensor(const std::string &sensorName, double alertThreshold);
 
-public:
+  public:
     virtual ~Sensor() = default;
 
     virtual void fetchData() = 0;

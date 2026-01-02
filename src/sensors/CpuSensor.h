@@ -4,11 +4,11 @@
 #include "Sensor.h"
 
 class CpuSensor : public Sensor {
-private:
+  private:
     int cores;
     unsigned long long prevUser, prevNice, prevSystem, prevIdle, prevTotal;
 
-public:
+  public:
     CpuSensor(int cpuCores, double alertThreshold);
     void fetchData() override;
 };

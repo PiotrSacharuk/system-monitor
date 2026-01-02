@@ -4,7 +4,7 @@
 #include "Sensor.h"
 
 class RamSensor : public Sensor {
-public:
+  public:
     RamSensor(double alertThreshold);
     void fetchData() override;
 };

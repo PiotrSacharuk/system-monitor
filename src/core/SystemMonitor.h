@@ -8,15 +8,14 @@
 #include <unordered_map>
 #include <vector>
 
-class SystemMonitor
-{
-private:
+class SystemMonitor {
+  private:
     std::string serverName;
     std::unordered_map<std::string, std::unique_ptr<Sensor>> sensors;
     std::unordered_map<std::string, std::deque<double>> history;
     static constexpr size_t HISTORY_SIZE = 10;
 
-public:
+  public:
     SystemMonitor(const std::string &name);
     void addSensor(std::unique_ptr<Sensor> sensor);
     double getSensorAverage(const std::string &name) const;

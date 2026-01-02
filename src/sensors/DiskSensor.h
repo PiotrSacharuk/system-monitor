@@ -4,7 +4,7 @@
 #include "Sensor.h"
 
 class DiskSensor : public Sensor {
-public:
+  public:
     DiskSensor(double alertThreshold);
     void fetchData() override;
 };

@@ -1,9 +1,9 @@
-#include <gtest/gtest.h>
-#include "Sensor.h"
 #include "CpuSensor.h"
 #include "DiskSensor.h"
 #include "RamSensor.h"
+#include "Sensor.h"
 #include "SystemMonitor.h"
+#include <gtest/gtest.h>
 
 TEST(CpuSensorTest, RealMetricsPositive) {
     CpuSensor cpu(8, 85.0);
@@ -34,7 +34,7 @@ TEST(SensorTest, DisplayStatusOutput) {
     cpu.fetchData();
 
     std::stringstream buffer;
-    std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+    std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
 
     cpu.displayStatus();
 
