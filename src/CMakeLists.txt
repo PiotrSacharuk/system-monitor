@@ -33,8 +33,8 @@ target_link_libraries(SystemMonitor PRIVATE core_lib sensors_lib)
 
 # Coverage
 target_compile_options(SystemMonitor PRIVATE
-    $<$<CONFIG:Debug>: -fprofile-arcs -ftest-coverage>
+    -fprofile-arcs -ftest-coverage
 )
 target_link_options(SystemMonitor PRIVATE
-    $<$<CONFIG:Debug>: -fprofile-arcs -ftest-coverage>
+    -fprofile-arcs -ftest-coverage
 )
