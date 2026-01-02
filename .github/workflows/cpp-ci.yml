@@ -14,32 +14,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Install dependencies
+    - name: Test + Coverage
       run: |
-        sudo apt-get update
-        sudo apt-get install -y lcov
-
-    - name: Build with CMake
-      run: |
-        mkdir -p build && cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" ..
-        make -j$(nproc)
-
-    - name: Run Tests
-      working-directory: ./build
-      run: ctest -V
-
-    - name: Generate Coverage
-      working-directory: ./build
-      run: |
-        mkdir -p coverage
-        lcov --directory . --capture --output-file coverage/coverage.info --ignore-errors mismatch
-        lcov --remove coverage/coverage.info '/usr/*' '*/googletest/*' --output-file coverage/coverage.info
-        genhtml coverage/coverage.info --output-directory coverage/html
+        docker build --target=test-cov -t sm:test-cov .
+        docker run --rm \
+          -v $(pwd):/app \
+          sm:test-cov
 
     - name: Build Docker image
       run: |
         docker build -t system-monitor:latest .
+
+    - name: Upload Coverage
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage
+        path: coverage/
