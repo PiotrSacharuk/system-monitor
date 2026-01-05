@@ -18,16 +18,16 @@ jobs:
       run: |
         docker build --target=test-cov -t sm:test-cov .
         docker run --rm \
-          -v $(pwd)/coverage:/app/coverage \
+          -v ${{ github.workspace }}/coverage:/app/coverage \
           sm:test-cov
 
     - name: Build Docker image
       run: |
-        docker build -t system-monitor:latest .
+        docker build --target=prod -t system-monitor:latest .
 
     - name: Upload Coverage
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: coverage
-        path: coverage/
+        path: ${{ github.workspace }}/coverage
