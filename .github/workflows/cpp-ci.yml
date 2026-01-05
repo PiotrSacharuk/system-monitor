@@ -18,7 +18,7 @@ jobs:
       run: |
         docker build --target=test-cov -t sm:test-cov .
         docker run --rm \
-          -v $(pwd):/app \
+          -v $(pwd)/coverage:/app/coverage \
           sm:test-cov
 
     - name: Build Docker image
