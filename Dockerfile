@@ -41,6 +41,6 @@ CMD ["bash", "-c", "\
 # Production stage
 FROM ubuntu:24.04 AS prod
 WORKDIR /app
-COPY --from=dev /app/build-release/SystemMonitor ./SystemMonitor
+COPY --from=dev /app/build-release/src/SystemMonitor ./SystemMonitor
 VOLUME ["/app/logs"]
 CMD ["./SystemMonitor"]
