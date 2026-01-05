@@ -32,9 +32,9 @@ add_executable(SystemMonitor main.cpp)
 target_link_libraries(SystemMonitor PRIVATE core_lib sensors_lib)
 
 # Coverage
-target_compile_options(SystemMonitor PRIVATE
-    -fprofile-arcs -ftest-coverage
-)
-target_link_options(SystemMonitor PRIVATE
-    -fprofile-arcs -ftest-coverage
-)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(SystemMonitor PRIVATE -fprofile-arcs -ftest-coverage)
+    target_link_options(SystemMonitor PRIVATE -fprofile-arcs -ftest-coverage)
+endif()
+
+install(TARGETS SystemMonitor RUNTIME DESTINATION bin)
