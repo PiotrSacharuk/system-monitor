@@ -31,6 +31,16 @@
             "cacheVariables": {
                 "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -g -O1"
             }
+        },
+        {
+            "name": "ci-debug",
+            "inherits": "base",
+            "displayName": "CI Debug + Coverage",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS": "-fprofile-arcs -ftest-coverage -O0 -g",
+                "CMAKE_EXE_LINKER_FLAGS_DEBUG": "-fprofile-arcs -ftest-coverage -lgcov"
+            }
         }
     ],
     "buildPresets": [

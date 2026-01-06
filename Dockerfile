@@ -17,15 +17,13 @@ WORKDIR /app
 COPY . .
 
 FROM base AS dev
-RUN cmake -S . -B build-release \
-    -DCMAKE_BUILD_TYPE=Release && \
+RUN cmake -S . -B build-release --preset=release  && \
     cmake --build build-release -j$(nproc) && \
     cmake --install build-release --prefix /install
 
 # Test/Coverage stage
 FROM base AS test-cov
-RUN cmake -S . -B build-cov \
-    -DCMAKE_BUILD_TYPE=Debug && \
+RUN cmake -S . -B build-cov --preset=ci-debug && \
     cmake --build build-cov -j$(nproc) && \
     cmake --install build-cov --prefix /install
 
