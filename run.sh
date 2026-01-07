@@ -2,11 +2,13 @@
 set -e
 
 echo "Building System Monitor..."
-mkdir -p logs build
-cd build
-cmake --preset=release ..
+mkdir -p logs
+
+PRESET_NAME=release
+cmake --preset=${PRESET_NAME} .
+cd build/${PRESET_NAME}
 make -j$(nproc)
-cd ..
+cd ../..
 
 echo "Starting monitoring..."
-./build/src/SystemMonitor
+./build/${PRESET_NAME}/src/SystemMonitor

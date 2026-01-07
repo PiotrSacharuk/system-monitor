@@ -17,7 +17,7 @@ WORKDIR /app
 COPY . .
 
 FROM base AS dev
-RUN cmake -S . -B build-release --preset=release  && \
+RUN cmake -S . -B build-release --preset=release && \
     cmake --build build-release -j$(nproc) && \
     cmake --install build-release --prefix /install
 
