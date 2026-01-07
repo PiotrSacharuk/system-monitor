@@ -39,7 +39,7 @@ void Config::loadFromFile(const std::string &filename) {
                 "Both config files missing, using built-in defaults");
         }
     } catch (const YAML::ParserException &e) {
-        Logger::logError("YAML syntax error: " + std::string(e.what()));
+        std::cerr << "YAML syntax error: " + std::string(e.what()) << std::endl;
     }
 }
 
