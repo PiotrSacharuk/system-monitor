@@ -1,7 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "Logger.h"
+#include "logger.h"
+
 #include <memory>
 #include <string>
 #include <yaml-cpp/yaml.h>
@@ -23,7 +24,7 @@ struct MonitoringConfig {
 
 class Config {
   public:
-    static Config &getInstance();
+    static Config& get_instance();
 
     ServerConfig server;
     MonitoringConfig monitoring;
@@ -31,10 +32,10 @@ class Config {
 
   private:
     Config();
-    void loadFromFile(const std::string &filename);
-    void loadConfigValues(const YAML::Node &config);
-    void validateValues();
-    void printConfigInfo(const std::string &filename);
+    void load_from_file(const std::string& filename);
+    void load_config_values(const YAML::Node& config);
+    void validate_values();
+    void print_config_info(const std::string& filename);
 };
 
 #endif

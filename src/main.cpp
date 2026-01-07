@@ -1,9 +1,10 @@
-#include "core/Config.h"
-#include "core/Logger.h"
-#include "core/SystemMonitor.h"
-#include "sensors/CpuSensor.h"
-#include "sensors/DiskSensor.h"
-#include "sensors/RamSensor.h"
+#include "core/config.h"
+#include "core/logger.h"
+#include "core/system_monitor.h"
+#include "sensors/cpu_sensor.h"
+#include "sensors/disk_sensor.h"
+#include "sensors/ram_sensor.h"
+
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -11,21 +12,17 @@
 
 int main() {
     try {
-        auto &config = Config::getInstance();
+        auto& config = Config::get_instance();
         Logger::log("System Monitor started: " + config.server.name);
 
-        SystemMonitor systemMonitor(config.server.name);
-        systemMonitor.addSensor(std::make_unique<CpuSensor>(
-            config.cpu.cores, config.cpu.threshold));
-        systemMonitor.addSensor(
-            std::make_unique<RamSensor>(config.ram.threshold));
-        systemMonitor.addSensor(
-            std::make_unique<DiskSensor>(config.disk.threshold));
+        SystemMonitor system_monitor(config.server.name);
+        system_monitor.add_sensor(
+            std::make_unique<CpuSensor>(config.cpu.cores, config.cpu.threshold));
+        system_monitor.add_sensor(std::make_unique<RamSensor>(config.ram.threshold));
+        system_monitor.add_sensor(std::make_unique<DiskSensor>(config.disk.threshold));
 
-        Logger::log("Monitoring " +
-                    std::to_string(config.monitoring.test_cycles) +
-                    " cycles every " +
-                    std::to_string(config.monitoring.interval_seconds) + "s");
+        Logger::log("Monitoring " + std::to_string(config.monitoring.test_cycles) +
+                    " cycles every " + std::to_string(config.monitoring.interval_seconds) + "s");
 
         int cycles = config.monitoring.test_cycles;
         int interval = config.monitoring.interval_seconds;
@@ -33,21 +30,17 @@ int main() {
             Logger::log("PRODUCTION MODE: Infinite monitoring");
             while (true) {
                 try {
-                    systemMonitor.fetchAllData();
-                    systemMonitor.displayStatus();
+                    system_monitor.fetch_all_data();
+                    system_monitor.display_status();
 
                     std::cout << "\n STATISTICS: " << std::endl;
-                    std::cout
-                        << "CPU avg: " << systemMonitor.getSensorAverage("CPU")
-                        << std::endl;
-                    std::cout
-                        << "CPU max: " << systemMonitor.getSensorMax("CPU")
-                        << std::endl;
-                    std::cout
-                        << "CPU trend: " << systemMonitor.getSensorTrend("CPU")
-                        << std::endl;
+                    std::cout << "CPU avg: " << system_monitor.get_sensor_average("CPU")
+                              << std::endl;
+                    std::cout << "CPU max: " << system_monitor.get_sensor_max("CPU") << std::endl;
+                    std::cout << "CPU trend: " << system_monitor.get_sensor_trend("CPU")
+                              << std::endl;
                     std::this_thread::sleep_for(std::chrono::seconds(interval));
-                } catch (const std::exception &e) {
+                } catch (const std::exception& e) {
                     std::cerr << "Monitoring error: " << std::string(e.what()) << std::endl;
                     std::this_thread::sleep_for(std::chrono::seconds(interval));
                 }
@@ -55,15 +48,15 @@ int main() {
         } else {
             Logger::log("TEST MODE: " + std::to_string(cycles) + " cycles.");
             for (int i = 0; i < cycles; i++) {
-                systemMonitor.fetchAllData();
-                systemMonitor.displayStatus();
+                system_monitor.fetch_all_data();
+                system_monitor.display_status();
                 std::this_thread::sleep_for(std::chrono::seconds(interval));
             }
         }
 
         std::cout << "Monitoring finished." << std::endl;
         return 0;
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << "Fatal error: " << e.what() << std::endl;
         return 1;
     } catch (...) {

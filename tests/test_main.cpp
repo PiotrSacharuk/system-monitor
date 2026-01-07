@@ -1,42 +1,43 @@
-#include "CpuSensor.h"
-#include "DiskSensor.h"
-#include "RamSensor.h"
-#include "Sensor.h"
-#include "SystemMonitor.h"
+#include "cpu_sensor.h"
+#include "disk_sensor.h"
+#include "ram_sensor.h"
+#include "sensor.h"
+#include "system_monitor.h"
+
 #include <gtest/gtest.h>
 
 TEST(CpuSensorTest, RealMetricsPositive) {
     CpuSensor cpu(8, 85.0);
-    double before = cpu.getValue();
-    cpu.fetchData();
-    double after = cpu.getValue();
+    double before = cpu.get_value();
+    cpu.fetch_data();
+    double after = cpu.get_value();
     EXPECT_GE(after, 0.0);
 }
 
 TEST(RamSensorTest, RealMetricsReasonable) {
     RamSensor ram(50.0);
-    ram.fetchData();
-    EXPECT_GT(ram.getValue(), 0.0);
-    EXPECT_LE(ram.getValue(), 99.0);
-    EXPECT_TRUE(ram.isHealthy());
+    ram.fetch_data();
+    EXPECT_GT(ram.get_value(), 0.0);
+    EXPECT_LE(ram.get_value(), 99.0);
+    EXPECT_TRUE(ram.is_healthy());
 }
 
 TEST(DiskSensorTest, ThresholdWorks) {
     DiskSensor disk(50.0);
-    disk.fetchData();
+    disk.fetch_data();
 
-    double value = disk.getValue();
-    EXPECT_EQ(disk.isHealthy(), value < 50.0);
+    double value = disk.get_value();
+    EXPECT_EQ(disk.is_healthy(), value < 50.0);
 }
 
 TEST(SensorTest, DisplayStatusOutput) {
     CpuSensor cpu(8, 85.0);
-    cpu.fetchData();
+    cpu.fetch_data();
 
     std::stringstream buffer;
-    std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
+    std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
 
-    cpu.displayStatus();
+    cpu.display_status();
 
     std::cout.rdbuf(old);
 
@@ -47,16 +48,16 @@ TEST(SensorTest, DisplayStatusOutput) {
 
 TEST(SystemMonitorTest, PolymorphismWorks) {
     SystemMonitor monitor("TestServer");
-    monitor.addSensor(std::make_unique<CpuSensor>(4, 90.0));
-    monitor.addSensor(std::make_unique<RamSensor>(80.0));
+    monitor.add_sensor(std::make_unique<CpuSensor>(4, 90.0));
+    monitor.add_sensor(std::make_unique<RamSensor>(80.0));
 
-    EXPECT_TRUE(monitor.isHealthy());
+    EXPECT_TRUE(monitor.is_healthy());
 
-    monitor.fetchAllData();
-    monitor.displayStatus();
+    monitor.fetch_all_data();
+    monitor.display_status();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

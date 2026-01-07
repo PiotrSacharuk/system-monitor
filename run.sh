@@ -11,4 +11,4 @@ make -j$(nproc)
 cd ../..
 
 echo "Starting monitoring..."
-./build/${PRESET_NAME}/src/SystemMonitor
+./build/${PRESET_NAME}/src/system-monitor

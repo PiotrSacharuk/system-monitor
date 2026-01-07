@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=dev /install/bin/SystemMonitor ./SystemMonitor
+COPY --from=dev /install/bin/system-monitor ./system-monitor
 
 VOLUME ["/app/logs"]
-CMD ["./SystemMonitor"]
+CMD ["./system-monitor"]
