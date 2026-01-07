@@ -36,6 +36,11 @@ CMD ["bash", "-c", "\
 # Production stage
 FROM ubuntu:24.04 AS prod
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    libyaml-cpp0.8 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=dev /install/bin/SystemMonitor ./SystemMonitor
 
 VOLUME ["/app/logs"]

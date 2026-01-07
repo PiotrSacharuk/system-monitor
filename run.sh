@@ -6,7 +6,6 @@ mkdir -p logs build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
-cd ..
 
 echo "Starting monitoring..."
-./build/SystemMonitor
+./src/SystemMonitor

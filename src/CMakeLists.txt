@@ -29,7 +29,7 @@ target_link_libraries(sensors_lib
 )
 
 add_executable(SystemMonitor main.cpp)
-target_link_libraries(SystemMonitor PRIVATE core_lib sensors_lib)
+target_link_libraries(SystemMonitor PRIVATE core_lib sensors_lib yaml-cpp)
 
 # Coverage
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
