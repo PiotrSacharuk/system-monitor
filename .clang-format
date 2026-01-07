@@ -1,5 +1,33 @@
 BasedOnStyle: LLVM
+
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
+
 BreakBeforeBraces: Attach
+
+ColumnLimit: 100
+
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+SpaceBeforeParens: ControlStatements
+SpacesInAngles: false
+SpaceInEmptyParentheses: false
+
+AlignAfterOpenBracket: Align
+AlignOperands: true
+AlignTrailingComments: true
+
+SortIncludes: true
+IncludeBlocks: Regroup
+
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+
+PointerAlignment: Left   # int* ptr
+ReferenceAlignment: Left # int& ref
+
+NamespaceIndentation: All
+FixNamespaceComments: true

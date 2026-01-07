@@ -46,7 +46,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
 
 # Run
-./src/SystemMonitor
+./src/system-monitor
 ```
 
 ## Configuration
@@ -137,17 +137,17 @@ cmake --build build/release
 
 ```
 system-monitor/
-├── src/                        # Source code
-│   ├── main.cpp                # Application entry point
-│   ├── core/                   # Core components
-│   │   ├── Config.h/cpp        # Configuration management
-│   │   ├── Logger.h/cpp        # Logging system
-│   │   └── SystemMonitor.h/cpp # Main monitoring logic
-│   └── sensors/                # Sensor implementations
-│       ├── Sensor.h            # Base sensor interface
-│       ├── CpuSensor.h/cpp
-│       ├── RamSensor.h/cpp
-│       └── DiskSensor.h/cpp
+├── src/                         # Source code
+│   ├── main.cpp                 # Application entry point
+│   ├── core/                    # Core components
+│   │   ├── config.h/cpp         # Configuration management
+│   │   ├── logger.h/cpp         # Logging system
+│   │   └── system-monitor.h/cpp # Main monitoring logic
+│   └── sensors/                 # Sensor implementations
+│       ├── sensor.h             # Base sensor interface
+│       ├── cpu_sensor.h/cpp
+│       ├── ram_sensor.h/cpp
+│       └── disk_sensor.h/cpp
 ├── tests/                      # Unit tests
 ├── config.example.yaml         # Configuration template
 ├── CMakeLists.txt              # CMake configuration

@@ -1,10 +1,11 @@
-#include "RamSensor.h"
+#include "ram_sensor.h"
+
 #include <fstream>
 #include <iostream>
 
-RamSensor::RamSensor(double alertThreshold) : Sensor("RAM", alertThreshold) {}
+RamSensor::RamSensor(double alert_threshold) : Sensor("RAM", alert_threshold) {}
 
-void RamSensor::fetchData() {
+void RamSensor::fetch_data() {
     try {
         std::ifstream meminfo("/proc/meminfo");
         std::string line;
@@ -19,12 +20,12 @@ void RamSensor::fetchData() {
         }
 
         if (total > 0) {
-            currentValue = 100.0 * (1.0 - (double)available / total);
+            current_value = 100.0 * (1.0 - (double)available / total);
         }
-        std::cout << "RAM data collected from /proc/meminfo ("
-                  << (int)currentValue << "%)" << std::endl;
-    } catch (const std::exception &e) {
+        std::cout << "RAM data collected from /proc/meminfo (" << (int)current_value << "%)"
+                  << std::endl;
+    } catch (const std::exception& e) {
         std::cerr << "RAM Sensor error: " + std::string(e.what()) << std::endl;
-        currentValue = 0.0;
+        current_value = 0.0;
     }
 }

@@ -1,9 +1,10 @@
-#include "Config.h"
+#include "config.h"
+
 #include <fstream>
 #include <iostream>
 #include <yaml-cpp/yaml.h>
 
-Config &Config::getInstance() {
+Config& Config::get_instance() {
     static Config instance;
     return instance;
 }
@@ -16,41 +17,39 @@ Config::Config() {
     ram = {"RAM", 90};
     disk = {"DISK", 90};
 
-    loadFromFile("config.yaml");
-    validateValues();
+    load_from_file("config.yaml");
+    validate_values();
 }
 
-void Config::loadFromFile(const std::string &filename) {
+void Config::load_from_file(const std::string& filename) {
     try {
         YAML::Node config = YAML::LoadFile(filename);
-        loadConfigValues(config);
-        printConfigInfo(const_cast<std::string &>(filename));
-    } catch (const YAML::BadFile &e) {
-        Logger::logError("Failed to load " + filename);
+        load_config_values(config);
+        print_config_info(const_cast<std::string&>(filename));
+    } catch (const YAML::BadFile& e) {
+        Logger::log_error("Failed to load " + filename);
 
         try {
-            const std::string exampleFilename = "config.example.yaml";
-            Logger::log("Trying fallback: " + exampleFilename);
-            YAML::Node config = YAML::LoadFile(exampleFilename);
-            loadConfigValues(config);
-            printConfigInfo(exampleFilename);
-        } catch (const YAML::BadFile &e2) {
-            Logger::logError(
-                "Both config files missing, using built-in defaults");
+            const std::string example_filename = "config.example.yaml";
+            Logger::log("Trying fallback: " + example_filename);
+            YAML::Node config = YAML::LoadFile(example_filename);
+            load_config_values(config);
+            print_config_info(example_filename);
+        } catch (const YAML::BadFile& e2) {
+            Logger::log_error("Both config files missing, using built-in defaults");
         }
-    } catch (const YAML::ParserException &e) {
+    } catch (const YAML::ParserException& e) {
         std::cerr << "YAML syntax error: " + std::string(e.what()) << std::endl;
     }
 }
 
-void Config::loadConfigValues(const YAML::Node &config) {
+void Config::load_config_values(const YAML::Node& config) {
     if (config["server"]["name"]) {
         server.name = config["server"]["name"].as<std::string>();
     }
 
     if (config["monitoring"]["interval_seconds"]) {
-        monitoring.interval_seconds =
-            config["monitoring"]["interval_seconds"].as<unsigned>();
+        monitoring.interval_seconds = config["monitoring"]["interval_seconds"].as<unsigned>();
     }
     if (config["monitoring"]["test_cycles"]) {
         monitoring.test_cycles = config["monitoring"]["test_cycles"].as<int>();
@@ -72,7 +71,7 @@ void Config::loadConfigValues(const YAML::Node &config) {
     }
 }
 
-void Config::validateValues() {
+void Config::validate_values() {
     if (cpu.cores <= 0) {
         throw std::invalid_argument("CPU cores must be > 0");
     }
@@ -94,15 +93,14 @@ void Config::validateValues() {
     }
 }
 
-void Config::printConfigInfo(const std::string &filename) {
+void Config::print_config_info(const std::string& filename) {
     Logger::log("Configuration from " + filename + ":");
     Logger::log("   Server: " + server.name);
-    Logger::log("   Monitoring interval: " +
-                std::to_string(monitoring.interval_seconds) + " seconds");
-    Logger::log("   Monitoring test cycles: " +
-                std::to_string(monitoring.test_cycles));
-    Logger::log("   CPU: " + std::to_string(cpu.threshold) + "% (" +
-                std::to_string(cpu.cores) + " cores)");
+    Logger::log("   Monitoring interval: " + std::to_string(monitoring.interval_seconds) +
+                " seconds");
+    Logger::log("   Monitoring test cycles: " + std::to_string(monitoring.test_cycles));
+    Logger::log("   CPU: " + std::to_string(cpu.threshold) + "% (" + std::to_string(cpu.cores) +
+                " cores)");
     Logger::log("   RAM: " + std::to_string(ram.threshold) + "%");
     Logger::log("   DISK: " + std::to_string(disk.threshold) + "%");
 }
