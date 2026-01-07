@@ -16,13 +16,24 @@ void SystemMonitor::addSensor(std::unique_ptr<Sensor> sensor) {
 void SystemMonitor::fetchAllData() {
     std::cout << "Collect data from all sensors..." << std::endl;
     for (auto &[name, sensor] : sensors) {
-        sensor->fetchData();
+        try {
+            sensor->fetchData();
 
-        auto &buf = history[name];
+            auto &buf = history[name];
 
-        buf.push_back(sensor->getValue());
-        if (buf.size() > HISTORY_SIZE) {
-            buf.pop_front();
+            buf.push_back(sensor->getValue());
+            if (buf.size() > HISTORY_SIZE) {
+                buf.pop_front();
+            }
+        } catch (const std::exception &e) {
+            Logger::logError("Sensor " + name +
+                             " failed: " + std::string(e.what()));
+            auto &buf = history[name];
+            if (!buf.empty()) {
+                buf.push_back(buf.back());
+            } else {
+                buf.push_back(0.0);
+            }
         }
     }
 }
