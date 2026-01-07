@@ -4,8 +4,9 @@ set -e
 echo "Building System Monitor..."
 mkdir -p logs build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --preset=release ..
 make -j$(nproc)
+cd ..
 
 echo "Starting monitoring..."
-./src/SystemMonitor
+./build/src/SystemMonitor
