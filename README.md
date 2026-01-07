@@ -63,12 +63,12 @@ monitoring:
 
 sensors:
   cpu:
-    threshold: 85.0
+    threshold: 85
     cores: 8
   ram:
-    threshold: 90.0
+    threshold: 90
   disk:
-    threshold: 90.0
+    threshold: 90
 
 logging:
   enabled: true
