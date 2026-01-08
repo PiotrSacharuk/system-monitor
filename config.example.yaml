@@ -18,3 +18,4 @@ sensors:
 logging:
   enabled: true
   level: "INFO"
+  file_path: "logs/system.log"

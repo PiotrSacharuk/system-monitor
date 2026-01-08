@@ -13,7 +13,7 @@
 int main() {
     try {
         auto& config = Config::get_instance();
-        Logger::log("System Monitor started: " + config.server.name);
+        Logger::log_info("System Monitor started: " + config.server.name);
 
         SystemMonitor system_monitor(config.server.name);
         system_monitor.add_sensor(
@@ -21,13 +21,14 @@ int main() {
         system_monitor.add_sensor(std::make_unique<RamSensor>(config.ram.threshold));
         system_monitor.add_sensor(std::make_unique<DiskSensor>(config.disk.threshold));
 
-        Logger::log("Monitoring " + std::to_string(config.monitoring.test_cycles) +
-                    " cycles every " + std::to_string(config.monitoring.interval_seconds) + "s");
+        Logger::log_info("Monitoring " + std::to_string(config.monitoring.test_cycles) +
+                         " cycles every " + std::to_string(config.monitoring.interval_seconds) +
+                         "s");
 
         int cycles = config.monitoring.test_cycles;
         int interval = config.monitoring.interval_seconds;
         if (cycles == -1) {
-            Logger::log("PRODUCTION MODE: Infinite monitoring");
+            Logger::log_info("PRODUCTION MODE: Infinite monitoring");
             while (true) {
                 try {
                     system_monitor.fetch_all_data();
@@ -46,7 +47,7 @@ int main() {
                 }
             }
         } else {
-            Logger::log("TEST MODE: " + std::to_string(cycles) + " cycles.");
+            Logger::log_info("TEST MODE: " + std::to_string(cycles) + " cycles.");
             for (int i = 0; i < cycles; i++) {
                 system_monitor.fetch_all_data();
                 system_monitor.display_status();
