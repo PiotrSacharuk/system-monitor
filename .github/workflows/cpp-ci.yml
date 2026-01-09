@@ -7,27 +7,69 @@ on:
     branches: [master]
 
 jobs:
-  build-test:
+  build-test-coverage:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Test + Coverage
-      run: |
-        docker build --target=test-cov -t sm:test-cov .
-        docker run --rm \
-          -v ${{ github.workspace }}/coverage:/app/coverage \
-          sm:test-cov
+      - name: Build coverage image
+        run: docker build --target test-cov -t sm:test-cov .
 
-    - name: Build Docker image
-      run: |
-        docker build --target=prod -t system-monitor:latest .
+      - name: Run tests + coverage
+        run: |
+          mkdir -p coverage
+          docker run --rm \
+            -v ${{ github.workspace }}/coverage:/app/coverage \
+            sm:test-cov
 
-    - name: Upload Coverage
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage
-        path: ${{ github.workspace }}/coverage
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+  coverity:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Coverity
+        run: |
+          curl -L "$COVERITY_URL" -o coverity.tgz
+          tar -xzf coverity.tgz
+
+      - name: Build coverity stage
+        run: docker build --target coverity -t sm:coverity .
+
+      - name: Coverity build capture
+        run: |
+          ./cov-analysis-linux64/bin/cov-build \
+            --dir cov-int \
+            docker run --rm sm:coverity
+
+      - name: Coverity analyze
+        run: |
+          ./cov-analysis-linux64/bin/cov-analyze \
+            --dir cov-int \
+            --exclude-regex "_deps/.*"
+
+      - name: Upload Coverity results
+        run: |
+          ./cov-analysis-linux64/bin/cov-format-errors \
+            --dir cov-int \
+            --json-output-v2 coverity.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverity
+          path: coverity.json
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build-test-coverage
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build prod image
+        run: docker build --target prod -t system-monitor:latest .
