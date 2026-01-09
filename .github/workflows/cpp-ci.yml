@@ -7,27 +7,84 @@ on:
     branches: [master]
 
 jobs:
-  build-test:
+  build-test-coverage:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Test + Coverage
-      run: |
-        docker build --target=test-cov -t sm:test-cov .
-        docker run --rm \
-          -v ${{ github.workspace }}/coverage:/app/coverage \
-          sm:test-cov
+      - name: Build coverage image
+        run: docker build --target test-cov -t sm:test-cov .
 
-    - name: Build Docker image
-      run: |
-        docker build --target=prod -t system-monitor:latest .
+      - name: Run tests + coverage
+        run: |
+          mkdir -p coverage
+          docker run --rm \
+            -v ${{ github.workspace }}/coverage:/app/coverage \
+            sm:test-cov
 
-    - name: Upload Coverage
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage
-        path: ${{ github.workspace }}/coverage
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+  coverity:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'master'
+    env:
+      COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
+      COVERITY_PROJECT: ${{ secrets.COVERITY_PROJECT }}
+      COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
+      COVERITY_URL: ${{ secrets.COVERITY_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake curl
+
+      - name: Download Coverity
+        run: |
+          curl -L "$COVERITY_URL" \
+              --data "token=${{ secrets.COVERITY_TOKEN }}&project=${{ secrets.COVERITY_PROJECT }}" \
+              -o coverity.tgz
+              mkdir coverity
+              tar -xzf coverity.tgz -C coverity --strip-components=1
+              ls coverity/bin
+
+      - name: Configure
+        run: |
+          cmake -S . -B build
+
+      - name: Coverity build capture
+        run: |
+          coverity/bin/cov-build \
+            --dir cov-int \
+            cmake --build build -j$(nproc)
+
+      - name: Analyze
+        run: |
+          coverity/bin/cov-analyze \
+            --dir cov-int \
+            --exclude-regex "build/.*"
+
+      - name: Submit
+        run: |
+          tar -czf coverity.tgz cov-int
+          curl \
+            --form token=$COVERITY_TOKEN \
+            --form email=$COVERITY_EMAIL \
+            --form file=@coverity.tgz \
+            --form version=pr-${{ github.event.pull_request.number }} \
+            --form description="PR #${{ github.event.pull_request.number }}" \
+            https://scan.coverity.com/builds?project=$COVERITY_PROJECT
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build-test-coverage
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build prod image
+        run: docker build --target prod -t system-monitor:latest .

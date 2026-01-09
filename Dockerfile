@@ -24,14 +24,22 @@ RUN cmake -S . -B build-release --preset=release && \
 # Test/Coverage stage
 FROM base AS test-cov
 RUN cmake -S . -B build-cov --preset=ci-debug && \
-    cmake --build build-cov -j$(nproc) && \
-    cmake --install build-cov --prefix /install
+    cmake --build build-cov -j$(nproc)
 
 CMD ["bash", "-c", "\
     ctest --test-dir build-cov --output-on-failure && \
     mkdir -p coverage && \
-    gcovr -r . /install/bin --html-details coverage/index.html --xml coverage/coverage.xml \
+    gcovr -r . build-cov \
+    --filter '^src/' \
+    --exclude 'build-cov/.*' \
+    --exclude 'tests/.*' \
+    --html-details coverage/index.html \
+    --xml coverage/coverage.xml \
     "]
+
+FROM base AS coverity
+RUN cmake -S . -B build-cov --preset=ci-debug && \
+    cmake --build build-cov -j$(nproc)
 
 # Production stage
 FROM ubuntu:24.04 AS prod
