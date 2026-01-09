@@ -22,6 +22,12 @@ struct MonitoringConfig {
     int test_cycles;
 };
 
+struct LoggerConfig {
+    bool enabled;
+    std::string level;
+    std::string file_path;
+};
+
 class Config {
   public:
     static Config& get_instance();
@@ -29,6 +35,7 @@ class Config {
     ServerConfig server;
     MonitoringConfig monitoring;
     SensorConfig cpu, ram, disk;
+    LoggerConfig logging;
 
   private:
     Config();

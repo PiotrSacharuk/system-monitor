@@ -16,6 +16,7 @@ Config::Config() {
     cpu = {"CPU", 85, 8};
     ram = {"RAM", 90};
     disk = {"DISK", 90};
+    logging = {true, "INFO", "system.log"};
 
     load_from_file("config.yaml");
     validate_values();
@@ -26,15 +27,17 @@ void Config::load_from_file(const std::string& filename) {
         YAML::Node config = YAML::LoadFile(filename);
         load_config_values(config);
         print_config_info(const_cast<std::string&>(filename));
+        Logger::init(logging.file_path);
     } catch (const YAML::BadFile& e) {
         Logger::log_error("Failed to load " + filename);
 
         try {
             const std::string example_filename = "config.example.yaml";
-            Logger::log("Trying fallback: " + example_filename);
+            Logger::log_info("Trying fallback: " + example_filename);
             YAML::Node config = YAML::LoadFile(example_filename);
             load_config_values(config);
             print_config_info(example_filename);
+            Logger::init(logging.file_path);
         } catch (const YAML::BadFile& e2) {
             Logger::log_error("Both config files missing, using built-in defaults");
         }
@@ -69,6 +72,22 @@ void Config::load_config_values(const YAML::Node& config) {
     if (config["sensors"]["disk"]["threshold"]) {
         disk.threshold = config["sensors"]["disk"]["threshold"].as<unsigned>();
     }
+
+    if (config["logging"]["enabled"]) {
+        logging.enabled = config["logging"]["enabled"].as<bool>();
+        if (!logging.enabled) {
+            logging.file_path = "";
+        } else {
+            if (config["logging"]["file_path"]) {
+                logging.file_path = config["logging"]["file_path"].as<std::string>();
+                std::cout << "Log file_path set to " + logging.file_path << std::endl;
+            }
+            if (config["logging"]["level"]) {
+                logging.level = config["logging"]["level"].as<std::string>();
+                std::cout << "Log level set to " + logging.level << std::endl;
+            }
+        }
+    }
 }
 
 void Config::validate_values() {
@@ -94,13 +113,13 @@ void Config::validate_values() {
 }
 
 void Config::print_config_info(const std::string& filename) {
-    Logger::log("Configuration from " + filename + ":");
-    Logger::log("   Server: " + server.name);
-    Logger::log("   Monitoring interval: " + std::to_string(monitoring.interval_seconds) +
-                " seconds");
-    Logger::log("   Monitoring test cycles: " + std::to_string(monitoring.test_cycles));
-    Logger::log("   CPU: " + std::to_string(cpu.threshold) + "% (" + std::to_string(cpu.cores) +
-                " cores)");
-    Logger::log("   RAM: " + std::to_string(ram.threshold) + "%");
-    Logger::log("   DISK: " + std::to_string(disk.threshold) + "%");
+    Logger::log_info("Configuration from " + filename + ":");
+    Logger::log_info("   Server: " + server.name);
+    Logger::log_info("   Monitoring interval: " + std::to_string(monitoring.interval_seconds) +
+                     " seconds");
+    Logger::log_info("   Monitoring test cycles: " + std::to_string(monitoring.test_cycles));
+    Logger::log_info("   CPU: " + std::to_string(cpu.threshold) + "% (" +
+                     std::to_string(cpu.cores) + " cores)");
+    Logger::log_info("   RAM: " + std::to_string(ram.threshold) + "%");
+    Logger::log_info("   DISK: " + std::to_string(disk.threshold) + "%");
 }

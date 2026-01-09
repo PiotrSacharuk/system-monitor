@@ -1,5 +1,6 @@
 #include "system_monitor.h"
 
+#include "config.h"
 #include "logger.h"
 
 #include <algorithm>
