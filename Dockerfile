@@ -24,8 +24,7 @@ RUN cmake -S . -B build-release --preset=release && \
 # Test/Coverage stage
 FROM base AS test-cov
 RUN cmake -S . -B build-cov --preset=ci-debug && \
-    cmake --build build-cov -j$(nproc) && \
-    cmake --install build-cov --prefix /install
+    cov-build --dir cov-int cmake --build build-cov -j$(nproc)
 
 CMD ["bash", "-c", "\
     ctest --test-dir build-cov --output-on-failure && \
