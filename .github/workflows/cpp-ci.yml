@@ -32,39 +32,54 @@ jobs:
   coverity:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.base_ref == 'master'
+    env:
+      COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
+      COVERITY_PROJECT: ${{ secrets.COVERITY_PROJECT }}
+      COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
+      COVERITY_URL: ${{ secrets.COVERITY_URL }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake curl
+
       - name: Download Coverity
         run: |
-          curl -L "$COVERITY_URL" -o coverity.tgz
-          tar -xzf coverity.tgz
+          curl -L "$COVERITY_URL" \
+              --data "token=${{ secrets.COVERITY_TOKEN }}&project=${{ secrets.COVERITY_PROJECT }}" \
+              -o coverity.tgz
+              mkdir coverity
+              tar -xzf coverity.tgz -C coverity --strip-components=1
+              ls coverity/bin
 
-      - name: Build coverity stage
-        run: docker build --target coverity -t sm:coverity .
+      - name: Configure
+        run: |
+          cmake -S . -B build
 
       - name: Coverity build capture
         run: |
-          ./cov-analysis-linux64/bin/cov-build \
+          coverity/bin/cov-build \
             --dir cov-int \
-            docker run --rm sm:coverity
+            cmake --build build -j$(nproc)
 
-      - name: Coverity analyze
+      - name: Analyze
         run: |
-          ./cov-analysis-linux64/bin/cov-analyze \
+          coverity/bin/cov-analyze \
             --dir cov-int \
-            --exclude-regex "_deps/.*"
+            --exclude-regex "build/.*"
 
-      - name: Upload Coverity results
+      - name: Submit
         run: |
-          ./cov-analysis-linux64/bin/cov-format-errors \
-            --dir cov-int \
-            --json-output-v2 coverity.json
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: coverity
-          path: coverity.json
+          tar -czf coverity.tgz cov-int
+          curl \
+            --form token=$COVERITY_TOKEN \
+            --form email=$COVERITY_EMAIL \
+            --form file=@coverity.tgz \
+            --form version=pr-${{ github.event.pull_request.number }} \
+            --form description="PR #${{ github.event.pull_request.number }}" \
+            https://scan.coverity.com/builds?project=$COVERITY_PROJECT
 
   release:
     runs-on: ubuntu-latest
