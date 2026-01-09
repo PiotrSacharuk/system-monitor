@@ -30,6 +30,9 @@ CMD ["bash", "-c", "\
     ctest --test-dir build-cov --output-on-failure && \
     mkdir -p coverage && \
     gcovr -r . build-cov \
+    --filter '^src/' \
+    --exclude 'build-cov/.*' \
+    --exclude 'tests/.*' \
     --html-details coverage/index.html \
     --xml coverage/coverage.xml \
     "]
